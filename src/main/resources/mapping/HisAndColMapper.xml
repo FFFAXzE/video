@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cdu.videoshare.mapper.HisAndColMapper">
+    <select id="getAll" resultMap="viewHisAndCol" parameterType="int">
+        select wv.* ,ws.id as sid,ws.sname,wh.view_time from wn_video wv ,wn_status ws,wn_history wh where ws.id=wv.`status` and wh.video_id=wv.id and wv.user_id=wh.user_id=#{userId}
+    </select>
+
+    <select id="getPraise" resultMap="viewHisAndCol" parameterType="int">
+        select wv.* ,ws.id as sid,ws.sname,wp.praise_time from wn_video wv ,wn_status ws,wn_praise wp where ws.id=wv.`status` and wp.video_id=wv.id and wv.user_id=wp.user_id=#{userId}
+    </select>
+
+
+
+    <resultMap id="viewHisAndCol" type="Video">
+        <!-- 定义主键 ,非常重要。如果是多个字段,则定义多个id -->
+        <!-- property：主键在pojo中的属性名 -->
+        <!-- column：主键在数据库中的列名 -->
+        <id property="id" column="id"/>
+        <!-- 定义普通属性 -->
+        <result property="title" column="title"/>
+        <result property="url" column="url"/>
+        <result property="cover" column="cover"/>
+        <result property="category.id" column="category_id"/>
+        <result property="category.name" column="name"/>
+        <result property="user.account" column="account"/>
+        <result property="pubTime" column="pub_time"/>
+        <result property="viewNum" column="view_num"/>
+        <result property="praiseNum" column="praise_num"/>
+        <result property="status.sname" column="sname"/>
+        <result property="status.id" column="sid"/>
+        <result property="viewTime" column="favor_time"/>
+        <result property="viewTime" column="view_time"/>
+    </resultMap>
+
+
+    <resultMap id="myVideo" type="Video">
+        <!-- 定义主键 ,非常重要。如果是多个字段,则定义多个id -->
+        <!-- property：主键在pojo中的属性名 -->
+        <!-- column：主键在数据库中的列名 -->
+        <id property="id" column="id"/>
+        <!-- 定义普通属性 -->
+        <result property="title" column="title"/>
+        <result property="url" column="url"/>
+        <result property="cover" column="cover"/>
+        <result property="pubTime" column="pub_time"/>
+        <result property="viewNum" column="view_num"/>
+        <result property="praiseNum" column="praise_num"/>
+        <result property="status.id" column="status"/>
+
+
+    </resultMap>
+    <select id="getMyVideo" parameterType="int" resultMap="myVideo">
+        select * from wn_video where user_id=#{userId};
+    </select>
+
+    <select id="getAllCollection" resultMap="viewHisAndCol" parameterType="int">
+        select wv.* ,ws.id as sid,ws.sname,wf.favor_time from wn_video wv ,wn_status ws,wn_favor wf where ws.id=wv.`status` and wf.video_id=wv.id and wv.user_id=wf.user_id=#{userId}
+    </select>
+
+    <insert id="addHistoryByUser" parameterType="int">
+        insert into wn_history(user_id,video_id) values (#{userId},#{videoId});
+    </insert>
+
+    <select id="checkRecord" parameterType="int" resultType="int">
+        select count(*) from wn_history where user_id=#{userId} and video_id=#{videoId};
+    </select>
+
+    <update id="modifyRecord" parameterType="int">
+        update wn_history set view_time = now() where user_id = #{userId} and video_id=#{videoId};
+    </update>
+
+
+</mapper>
